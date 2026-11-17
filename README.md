@@ -46,7 +46,7 @@
 
 ### 🛠️ Для разработчиков плейсов (3D-войс и бабблы)
 Вы можете добавить в свой плейс поддержку пространственного 3D-войса, чат-бабблов и интерактивных индикаторов голоса над головой (видимых только пользователям C.H.A.T.T.E.R):
-1. Скачайте файл **`ChatterIntegration.rbxm`** во вкладке [Releases](https://github.com/NerpaaDev/CHATTER-Roblox/releases).
+1. Скачайте файл **`CHATTER-Integration.rbxm`** во вкладке [Releases](https://github.com/NerpaaDev/CHATTER-Roblox/releases).
 2. Перетащите скачанный файл в окно **Roblox Studio** и поместите скрипт `ChatterServer` в папку **`ServerScriptService`**.
 3. Включите **`Game Settings → Security → Allow HTTP Requests`** в настройках вашей игры.
 4. Настройте дистанцию слышимости и нужные модули в таблице `CONFIG` в начале скрипта.
