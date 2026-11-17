@@ -23,7 +23,7 @@
 ---
 
 ### 📥 Установка и запуск
-1. Скачайте последний релиз **`CHATTER.exe`** во вкладке **[Releases](https://github.com](https://github.com/NerpaaDev/CHATTER-Roblox/releases)**.
+1. Скачайте последний релиз **`CHATTER.exe`** во вкладке [Releases](https://github.com/NerpaaDev/CHATTER-Roblox/releases).
 2. Запустите `CHATTER.exe` (установка не требуется, программа свернётся в трей возле часов).
 3. Зайдите на любой сервер в Roblox — оверлей появится автоматически.
 
