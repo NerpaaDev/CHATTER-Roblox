@@ -1,0 +1,45 @@
+name: Scan Release EXE on VirusTotal
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  scan-exe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download CHATTER.exe from Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release download "${{ github.event.release.tag_name }}" \
+            --repo "${{ github.repository }}" \
+            --pattern "CHATTER.exe" \
+            --dir .
+
+      - name: Calculate SHA-256
+        id: hash
+        run: |
+          SHA=$(sha256sum CHATTER.exe | awk '{print $1}')
+          echo "SHA256: $SHA"
+          echo "sha256=$SHA" >> $GITHUB_OUTPUT
+
+      - name: Upload CHATTER.exe to VirusTotal
+        env:
+          VT_API_KEY: ${{ secrets.VT_API_KEY }}
+        run: |
+          FILE_SIZE=$(stat -c%s "CHATTER.exe")
+          if [ "$FILE_SIZE" -le 33554432 ]; then
+            UPLOAD_URL="https://www.virustotal.com/api/v3/files"
+          else
+            UPLOAD_URL=$(curl -s -X POST "https://www.virustotal.com/api/v3/files/upload_url" \
+              -H "x-apikey: $VT_API_KEY" | jq -r '.data')
+          fi
+
+          RESPONSE=$(curl -s -X POST "$UPLOAD_URL" \
+            -H "x-apikey: $VT_API_KEY" \
+            -F "file=@CHATTER.exe")
+
+          ANALYSIS_ID=$(echo "$RESPONSE" | jq -r '.data.id')
+          echo "Analysis ID: $ANALYSIS_ID"
+          echo "Report URL: https://www.virustotal.com/gui/file/${{ steps.hash.outputs.sha256 }}"
