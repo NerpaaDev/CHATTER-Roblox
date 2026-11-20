@@ -4,10 +4,16 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write
+
 jobs:
   scan-exe:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Download CHATTER.exe from Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -36,10 +42,19 @@ jobs:
               -H "x-apikey: $VT_API_KEY" | jq -r '.data')
           fi
 
-          RESPONSE=$(curl -s -X POST "$UPLOAD_URL" \
+          curl -s -X POST "$UPLOAD_URL" \
             -H "x-apikey: $VT_API_KEY" \
-            -F "file=@CHATTER.exe")
+            -F "file=@CHATTER.exe" > /dev/null
 
-          ANALYSIS_ID=$(echo "$RESPONSE" | jq -r '.data.id')
-          echo "Analysis ID: $ANALYSIS_ID"
-          echo "Report URL: https://www.virustotal.com/gui/file/${{ steps.hash.outputs.sha256 }}"
+      - name: Update VirusTotal URL in README.md
+        run: |
+          NEW_URL="https://www.virustotal.com/gui/file/${{ steps.hash.outputs.sha256 }}?nocache=1"
+          sed -i -E "s|https://www\.virustotal\.com/gui/file/[a-f0-9]{64}(\?nocache=1)?|$NEW_URL|g" README.md
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update VirusTotal report link for ${{ github.event.release.tag_name }}"
+            git push
+          fi
